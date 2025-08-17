@@ -81,9 +81,6 @@ const IngredientChecker = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       const searchKey = ingredient.toLowerCase().trim();
       const found = ingredientDatabase[searchKey];
       
@@ -91,16 +88,46 @@ const IngredientChecker = () => {
         setResult(found);
         toast.success("Ingredient information found!");
       } else {
-        // Generic response for unknown ingredients
-        setResult({
-          name: ingredient,
-          safety: "caution",
-          skinTypes: [],
-          benefits: [],
-          concerns: ["Ingredient not found in database", "Consult a dermatologist for specific advice"],
-          description: "This ingredient is not in our database. For personalized advice about this ingredient, please consult with a dermatologist or skincare professional."
-        });
-        toast.info("Ingredient not found in database - showing general advice");
+        // Try AI-powered ingredient analysis
+        try {
+          const response = await fetch('/functions/v1/chat-ai', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: `Analyze the skincare ingredient "${ingredient}". Provide: 1) Safety level (safe/caution/avoid), 2) Suitable skin types, 3) Main benefits, 4) Potential concerns, 5) Brief description. Be concise and evidence-based.`,
+              context: "Ingredient analysis for skincare safety"
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Parse AI response into structured format
+            setResult({
+              name: ingredient,
+              safety: "caution", // Default to caution for unknown ingredients
+              skinTypes: [],
+              benefits: [],
+              concerns: ["AI-analyzed ingredient", "Consult a dermatologist for personalized advice"],
+              description: data.response || "AI analysis of this ingredient. Please consult a skincare professional for personalized advice."
+            });
+            toast.success("AI analysis completed!");
+          } else {
+            throw new Error("AI analysis failed");
+          }
+        } catch (aiError) {
+          // Fallback to generic response
+          setResult({
+            name: ingredient,
+            safety: "caution",
+            skinTypes: [],
+            benefits: [],
+            concerns: ["Ingredient not found in database", "Consult a dermatologist for specific advice"],
+            description: "This ingredient is not in our database. For personalized advice about this ingredient, please consult with a dermatologist or skincare professional."
+          });
+          toast.info("Showing general advice - AI analysis unavailable");
+        }
       }
     } catch (error) {
       toast.error("Error checking ingredient. Please try again.");

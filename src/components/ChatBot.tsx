@@ -48,10 +48,37 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      // Here you would integrate with OpenAI API
-      // For now, we'll simulate responses
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Get quiz results for context
+      const quizResults = localStorage.getItem("skinSyncQuizResults");
+      const context = quizResults ? JSON.parse(quizResults) : null;
+      
+      const response = await fetch('/functions/v1/chat-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          context: context ? `User has ${context.skinType} skin, lives in ${context.climate} climate, main concern is ${context.concerns}` : null,
+        }),
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: data.response || getBotResponse(message),
+        isBot: true,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error('AI Chat error:', error);
+      // Fallback to local responses
       const botResponse = getBotResponse(message);
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -59,10 +86,8 @@ const ChatBot = () => {
         isBot: true,
         timestamp: new Date(),
       };
-
       setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      toast.error("Sorry, I'm having trouble responding right now. Please try again.");
+      toast.error("Using offline mode. For full AI features, check your connection.");
     } finally {
       setIsLoading(false);
     }
