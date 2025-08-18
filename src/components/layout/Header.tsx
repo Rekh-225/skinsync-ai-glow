@@ -1,22 +1,36 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/auth/AuthProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Quiz", href: "/quiz" },
   { name: "Routines", href: "/routines" },
-  { name: "Diet & Nutrition", href: "/diet" },
-  { name: "Grooming & Hygiene", href: "/grooming" },
-  { name: "Ingredient Checker", href: "/ingredient-checker" },
+  { name: "Diet", href: "/diet" },
+  { name: "Grooming", href: "/grooming" },
+  { name: "Anti-Aging", href: "/anti-aging" },
+  { name: "Ingredients", href: "/ingredient-checker" },
+  { name: "Articles", href: "/articles" },
   { name: "Resources", href: "/resources" },
 ];
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -51,10 +65,27 @@ const Header = () => {
           </nav>
 
           {/* CTA Button - Desktop */}
-          <div className="hidden md:flex">
-            <Button asChild variant="default" className="btn-hero">
-              <Link to="/quiz">Get Started</Link>
-            </Button>
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                    <User className="w-4 h-4" />
+                    <span className="text-sm">{user.email?.split('@')[0]}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild variant="outline" size="sm">
+                <Link to="/auth">Sign In</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -91,12 +122,27 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="px-3 py-2">
-                <Button asChild variant="default" className="w-full btn-hero">
-                  <Link to="/quiz" onClick={() => setIsMenuOpen(false)}>
-                    Get Started
-                  </Link>
-                </Button>
+              <div className="px-3 py-2 mt-4 pt-4 border-t">
+                {user ? (
+                  <div className="space-y-3">
+                    <div className="text-sm text-muted-foreground">
+                      Signed in as {user.email?.split('@')[0]}
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleSignOut}
+                      className="w-full"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

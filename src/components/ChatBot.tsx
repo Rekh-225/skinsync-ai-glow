@@ -52,22 +52,19 @@ const ChatBot = () => {
       const quizResults = localStorage.getItem("skinSyncQuizResults");
       const context = quizResults ? JSON.parse(quizResults) : null;
       
-      const response = await fetch('/functions/v1/chat-ai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { supabase } = await import("@/integrations/supabase/client");
+      const response = await supabase.functions.invoke('chat-ai', {
+        body: {
           message,
           context: context ? `User has ${context.skinType} skin, lives in ${context.climate} climate, main concern is ${context.concerns}` : null,
-        }),
+        },
       });
 
-      if (!response.ok) {
+      if (response.error) {
         throw new Error('Failed to get AI response');
       }
 
-      const data = await response.json();
+      const data = response.data;
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: data.response || getBotResponse(message),

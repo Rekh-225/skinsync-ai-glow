@@ -90,19 +90,16 @@ const IngredientChecker = () => {
       } else {
         // Try AI-powered ingredient analysis
         try {
-          const response = await fetch('/functions/v1/chat-ai', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+          const { supabase } = await import("@/integrations/supabase/client");
+          const response = await supabase.functions.invoke('chat-ai', {
+            body: {
               message: `Analyze the skincare ingredient "${ingredient}". Provide: 1) Safety level (safe/caution/avoid), 2) Suitable skin types, 3) Main benefits, 4) Potential concerns, 5) Brief description. Be concise and evidence-based.`,
               context: "Ingredient analysis for skincare safety"
-            }),
+            },
           });
 
-          if (response.ok) {
-            const data = await response.json();
+          if (!response.error) {
+            const data = response.data;
             // Parse AI response into structured format
             setResult({
               name: ingredient,

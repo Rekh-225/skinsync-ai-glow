@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle, Sparkles, Users, Target } from "lucide-react";
+import { ArrowRight, CheckCircle, Sparkles, Users, Target, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import heroImage from "@/assets/hero-skincare.jpg";
@@ -67,6 +67,38 @@ const Home = () => {
                 </Link>
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tutorial Video Section */}
+      <section className="py-16 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Learn Your Skin Type</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Watch this tutorial to understand how to identify your skin type and choose the right products
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto">
+            <Card className="overflow-hidden shadow-strong">
+              <div className="relative">
+                <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                      <Play className="w-8 h-8 text-primary ml-1" />
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      Tutorial video will be embedded here
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Please provide the YouTube link to embed your tutorial video
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>

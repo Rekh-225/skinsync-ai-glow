@@ -9,10 +9,26 @@ const Diet = () => {
       icon: Apple,
       color: "text-green-600",
       items: [
-        { name: "Berries", benefit: "Combat free radicals, reduce inflammation" },
-        { name: "Oranges & Citrus", benefit: "Vitamin C for collagen production" },
-        { name: "Avocados", benefit: "Healthy fats for skin elasticity" },
-        { name: "Tomatoes", benefit: "Lycopene protects from sun damage" },
+        { 
+          name: "Berries", 
+          benefit: "Combat free radicals, reduce inflammation",
+          nutrition: "84 cal, Vitamin C 24mg, Fiber 3.6g per cup"
+        },
+        { 
+          name: "Oranges & Citrus", 
+          benefit: "Vitamin C for collagen production",
+          nutrition: "47 cal, Vitamin C 70mg, Folate 40mcg per orange"
+        },
+        { 
+          name: "Avocados", 
+          benefit: "Healthy fats for skin elasticity",
+          nutrition: "160 cal, Vitamin K 26mcg, Folate 120mcg per 100g"
+        },
+        { 
+          name: "Tomatoes", 
+          benefit: "Lycopene protects from sun damage",
+          nutrition: "18 cal, Lycopene 2.6mg, Vitamin C 14mg per 100g"
+        },
       ]
     },
     {
@@ -20,10 +36,26 @@ const Diet = () => {
       icon: Heart,
       color: "text-green-500",
       items: [
-        { name: "Spinach & Kale", benefit: "Vitamins A, C, E for skin repair" },
-        { name: "Carrots & Sweet Potatoes", benefit: "Beta-carotene for healthy glow" },
-        { name: "Bell Peppers", benefit: "High vitamin C content" },
-        { name: "Broccoli", benefit: "Zinc and vitamin A for healing" },
+        { 
+          name: "Spinach & Kale", 
+          benefit: "Vitamins A, C, E for skin repair",
+          nutrition: "23 cal, Vitamin K 483mcg, Iron 2.7mg per 100g"
+        },
+        { 
+          name: "Carrots & Sweet Potatoes", 
+          benefit: "Beta-carotene for healthy glow",
+          nutrition: "41 cal, Beta-carotene 8.3mg, Fiber 2.8g per 100g"
+        },
+        { 
+          name: "Bell Peppers", 
+          benefit: "High vitamin C content",
+          nutrition: "31 cal, Vitamin C 190mg, Vitamin A 157mcg per 100g"
+        },
+        { 
+          name: "Broccoli", 
+          benefit: "Zinc and vitamin A for healing",
+          nutrition: "34 cal, Vitamin C 89mg, Folate 63mcg per 100g"
+        },
       ]
     },
     {
@@ -31,10 +63,26 @@ const Diet = () => {
       icon: Zap,
       color: "text-blue-600",
       items: [
-        { name: "Fatty Fish (Salmon, Mackerel)", benefit: "Omega-3s reduce inflammation" },
-        { name: "Nuts & Seeds", benefit: "Vitamin E and healthy fats" },
-        { name: "Eggs", benefit: "Protein and biotin for skin strength" },
-        { name: "Greek Yogurt", benefit: "Probiotics for gut-skin connection" },
+        { 
+          name: "Fatty Fish (Salmon, Mackerel)", 
+          benefit: "Omega-3s reduce inflammation",
+          nutrition: "206 cal, Omega-3 2.3g, Protein 28g per 100g"
+        },
+        { 
+          name: "Nuts & Seeds", 
+          benefit: "Vitamin E and healthy fats",
+          nutrition: "607 cal, Vitamin E 26mg, Magnesium 268mg per 100g"
+        },
+        { 
+          name: "Eggs", 
+          benefit: "Protein and biotin for skin strength",
+          nutrition: "155 cal, Protein 13g, Biotin 10mcg per 100g"
+        },
+        { 
+          name: "Greek Yogurt", 
+          benefit: "Probiotics for gut-skin connection",
+          nutrition: "59 cal, Protein 10g, Probiotics 1B CFU per 100g"
+        },
       ]
     },
     {
@@ -42,10 +90,26 @@ const Diet = () => {
       icon: Droplets,
       color: "text-blue-500",
       items: [
-        { name: "Water (8+ glasses daily)", benefit: "Essential for skin hydration" },
-        { name: "Green Tea", benefit: "Antioxidants and anti-inflammatory" },
-        { name: "Quinoa & Brown Rice", benefit: "B vitamins for skin health" },
-        { name: "Oats", benefit: "Fiber helps eliminate toxins" },
+        { 
+          name: "Water (8+ glasses daily)", 
+          benefit: "Essential for skin hydration",
+          nutrition: "0 cal, Essential minerals, pH balance per 8oz"
+        },
+        { 
+          name: "Green Tea", 
+          benefit: "Antioxidants and anti-inflammatory",
+          nutrition: "2 cal, EGCG 50-100mg, L-theanine 25mg per cup"
+        },
+        { 
+          name: "Quinoa & Brown Rice", 
+          benefit: "B vitamins for skin health",
+          nutrition: "120 cal, B vitamins, Magnesium 64mg per 100g"
+        },
+        { 
+          name: "Oats", 
+          benefit: "Fiber helps eliminate toxins",
+          nutrition: "68 cal, Fiber 1.7g, Beta-glucan per 100g"
+        },
       ]
     }
   ];
@@ -154,7 +218,8 @@ const Diet = () => {
                     {category.items.map((item, itemIndex) => (
                       <div key={itemIndex} className="p-3 bg-green-50 rounded-lg">
                         <div className="font-medium text-green-800 mb-1">{item.name}</div>
-                        <div className="text-sm text-green-600">{item.benefit}</div>
+                        <div className="text-sm text-green-600 mb-1">{item.benefit}</div>
+                        <div className="text-xs text-success font-medium">📊 {item.nutrition}</div>
                       </div>
                     ))}
                   </div>
