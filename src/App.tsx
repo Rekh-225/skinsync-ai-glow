@@ -16,6 +16,7 @@ import Resources from "./pages/Resources";
 import Auth from "./pages/Auth";
 import AntiAging from "./pages/AntiAging";
 import Articles from "./pages/Articles";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/anti-aging" element={<AntiAging />} />
                 <Route path="/articles" element={<Articles />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

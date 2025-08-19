@@ -84,19 +84,14 @@ const Home = () => {
           <div className="max-w-4xl mx-auto">
             <Card className="overflow-hidden shadow-strong">
               <div className="relative">
-                <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
-                      <Play className="w-8 h-8 text-primary ml-1" />
-                    </div>
-                    <p className="text-muted-foreground mb-4">
-                      Tutorial video will be embedded here
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Please provide the YouTube link to embed your tutorial video
-                    </p>
-                  </div>
-                </div>
+                <iframe
+                  className="w-full aspect-video"
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="How to Check Your Skin Type"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
             </Card>
           </div>

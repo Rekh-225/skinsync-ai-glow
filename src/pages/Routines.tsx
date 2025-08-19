@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";  
 import { useLocation } from "react-router-dom";
-import { Sunrise, Moon, ChevronDown, ChevronRight, Droplets, Sun, Wind, Sparkles } from "lucide-react";
+import { Sunrise, Moon, ChevronDown, ChevronRight, Droplets, Sun, Wind, Sparkles, Play } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +58,39 @@ const Routines = () => {
         </CardContent>
       </Card>
     );
+  };
+
+  const getRecommendedVideo = () => {
+    if (!quizResults) return null;
+
+    const videoRecommendations = {
+      oily: {
+        title: "Complete Oily Skin Routine: Morning & Evening",
+        description: "Learn the best skincare routine for oily and acne-prone skin, including product recommendations and application techniques.",
+        thumbnail: "https://img.youtube.com/vi/bEMqFLuZMC8/maxresdefault.jpg",
+        url: "https://www.youtube.com/watch?v=bEMqFLuZMC8"
+      },
+      dry: {
+        title: "Dry Skin Routine: Hydration & Barrier Repair",
+        description: "Discover how to properly hydrate and repair your skin barrier with the right products and techniques for dry skin.",
+        thumbnail: "https://img.youtube.com/vi/YQl0mYMjjGk/maxresdefault.jpg",
+        url: "https://www.youtube.com/watch?v=YQl0mYMjjGk"
+      },
+      combination: {
+        title: "Combination Skin: Multi-Zone Skincare Approach",
+        description: "Master the art of treating different areas of your face with targeted products for combination skin types.",
+        thumbnail: "https://img.youtube.com/vi/t1EY-lD9wpY/maxresdefault.jpg",
+        url: "https://www.youtube.com/watch?v=t1EY-lD9wpY"
+      },
+      sensitive: {
+        title: "Sensitive Skin Care: Gentle & Effective Routine",
+        description: "Learn how to care for sensitive skin with gentle products and techniques that won't cause irritation.",
+        thumbnail: "https://img.youtube.com/vi/knDiARBbD7M/maxresdefault.jpg",
+        url: "https://www.youtube.com/watch?v=knDiARBbD7M"
+      }
+    };
+
+    return videoRecommendations[quizResults.skinType as keyof typeof videoRecommendations] || null;
   };
 
   const skinTypes = [
@@ -171,7 +204,47 @@ const Routines = () => {
         </div>
 
         {/* Personalized Message */}
-        {getPersonalizedMessage()}
+          {getPersonalizedMessage()}
+
+          {/* Recommended Video Section */}
+          {quizResults && getRecommendedVideo() && (
+            <Card className="mb-8 shadow-medium border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Play className="w-6 h-6 text-primary mr-2" />
+                  Recommended Video for You
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-4 items-center">
+                  <div className="md:col-span-1">
+                    <img 
+                      src={getRecommendedVideo()?.thumbnail} 
+                      alt={getRecommendedVideo()?.title}
+                      className="w-full aspect-video object-cover rounded-lg"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <h4 className="font-semibold mb-2">{getRecommendedVideo()?.title}</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {getRecommendedVideo()?.description}
+                    </p>
+                    <Button asChild className="btn-hero">
+                      <a 
+                        href={getRecommendedVideo()?.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Watch Video
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         {/* Routines Grid */}
         <div className="space-y-8">

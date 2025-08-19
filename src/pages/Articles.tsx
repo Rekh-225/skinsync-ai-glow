@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ExternalLink, Calendar, Tag, Search, Filter } from "lucide-react";
+import { RefreshCw, ExternalLink, Calendar, Tag, Search, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,38 @@ const Articles = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSkinType, setSelectedSkinType] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
+  const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { user } = useAuth();
+
+  useEffect(() => {
+    fetchLatestArticles();
+  }, []);
+
+  const fetchLatestArticles = async () => {
+    try {
+      setLoading(true);
+      const { supabase } = await import("@/integrations/supabase/client");
+      const response = await supabase.functions.invoke('fetch-articles');
+      
+      if (!response.error && response.data) {
+        const fetchedArticles = response.data.articles || mockArticles;
+        setArticles(fetchedArticles);
+        setFilteredArticles(fetchedArticles);
+        setLastUpdated(new Date(response.data.lastUpdated));
+      } else {
+        console.log('Using fallback articles');
+        setArticles(mockArticles);
+        setFilteredArticles(mockArticles);
+      }
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      setArticles(mockArticles);
+      setFilteredArticles(mockArticles);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get unique skin types and tags for filters
   const skinTypes = ["all", ...new Set(articles.flatMap(article => article.skin_types))];
@@ -145,10 +176,15 @@ const Articles = () => {
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Skincare Articles & Research</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Stay updated with the latest skincare research, ingredient studies, and expert advice from trusted sources
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Latest Skincare Research & Articles</h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-4">
+            Stay updated with the latest skincare research, breakthrough ingredients, and evidence-based advice from trusted dermatological sources
           </p>
+          {lastUpdated && (
+            <p className="text-sm text-muted-foreground">
+              Last updated: {lastUpdated.toLocaleDateString()} at {lastUpdated.toLocaleTimeString()}
+            </p>
+          )}
           {user && (
             <div className="mt-4 p-3 bg-primary/10 rounded-lg inline-block">
               <p className="text-primary text-sm">
@@ -167,7 +203,7 @@ const Articles = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -206,6 +242,26 @@ const Articles = () => {
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* Refresh Button */}
+              <Button 
+                onClick={fetchLatestArticles}
+                disabled={loading}
+                variant="outline"
+                className="flex items-center"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </>
+                )}
+              </Button>
             </div>
 
             {/* Active Filters */}
@@ -233,6 +289,24 @@ const Articles = () => {
         </Card>
 
         {/* Articles Grid */}
+        {loading && filteredArticles.length === 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="shadow-soft">
+                <div className="h-48 bg-muted animate-pulse"></div>
+                <CardContent className="p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-1/2 mb-4"></div>
+                    <div className="h-3 bg-muted rounded w-full mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-2/3 mb-4"></div>
+                    <div className="h-8 bg-muted rounded w-full"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredArticles.map((article) => (
             <Card key={article.id} className="shadow-medium hover-lift overflow-hidden">
@@ -320,9 +394,10 @@ const Articles = () => {
             </Card>
           ))}
         </div>
+        )}
 
         {/* No Results */}
-        {filteredArticles.length === 0 && (
+        {!loading && filteredArticles.length === 0 && (
           <Card className="text-center py-12 shadow-soft">
             <CardContent>
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">

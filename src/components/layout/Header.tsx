@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sparkles, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
+import NotificationSystem from "@/components/NotificationSystem";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,12 +16,11 @@ const navigation = [
   { name: "Home", href: "/" },
   { name: "Quiz", href: "/quiz" },
   { name: "Routines", href: "/routines" },
-  { name: "Diet", href: "/diet" },
-  { name: "Grooming", href: "/grooming" },
-  { name: "Anti-Aging", href: "/anti-aging" },
-  { name: "Ingredients", href: "/ingredient-checker" },
+  { name: "Ingredient Checker", href: "/ingredient-checker" },
+  { name: "Diet & Nutrition", href: "/diet" },
   { name: "Articles", href: "/articles" },
-  { name: "Resources", href: "/resources" },
+  { name: "Wrinkles", href: "/anti-aging" },
+  { name: "Contact", href: "/contact" },
 ];
 
 const Header = () => {
@@ -67,20 +67,23 @@ const Header = () => {
           {/* CTA Button - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                    <User className="w-4 h-4" />
-                    <span className="text-sm">{user.email?.split('@')[0]}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <>
+                <NotificationSystem />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">{user.email?.split('@')[0]}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               <Button asChild variant="outline" size="sm">
                 <Link to="/auth">Sign In</Link>
