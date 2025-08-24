@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
 interface IngredientAnalysis {
   name: string;
   safety: "safe" | "caution" | "avoid";
@@ -15,20 +14,17 @@ interface IngredientAnalysis {
   concerns: string[];
   interactionsWith: string[];
 }
-
 interface OverallAssessment {
   compatibility: "excellent" | "good" | "caution" | "poor";
   suitabilityForProfile: string;
   riskLevel: "low" | "medium" | "high";
 }
-
 interface PersonalizedAdvice {
   recommendedUsage: string;
   precautions: string[];
   alternatives: string[];
   routineIntegration: string;
 }
-
 interface AnalysisResult {
   overallAssessment: OverallAssessment;
   ingredientAnalysis: IngredientAnalysis[];
@@ -36,66 +32,55 @@ interface AnalysisResult {
   climateConsiderations?: string;
   dietarySupport?: string;
 }
-
 interface QuizResults {
   skinType: string;
   climate: string;
   dietHabits: string;
   concerns: string;
 }
-
 const IngredientChecker = () => {
   const [ingredientsText, setIngredientsText] = useState("");
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [quizResults, setQuizResults] = useState<QuizResults | null>(null);
-
   useEffect(() => {
     // Load quiz results from localStorage if available
     const savedQuizResults = JSON.parse(localStorage.getItem("skinSyncQuizResults") || "null");
     const savedPersonalizedData = JSON.parse(localStorage.getItem("skinSyncPersonalizedRoutine") || "null");
-    
     if (savedQuizResults) {
       setQuizResults(savedQuizResults);
     } else if (savedPersonalizedData?.quizResults) {
       setQuizResults(savedPersonalizedData.quizResults);
     }
   }, []);
-
   const parseIngredients = (text: string): string[] => {
-    return text
-      .split(/[,\n]/)
-      .map(ingredient => ingredient.trim())
-      .filter(ingredient => ingredient.length > 0);
+    return text.split(/[,\n]/).map(ingredient => ingredient.trim()).filter(ingredient => ingredient.length > 0);
   };
-
   const handleAnalyze = async () => {
     if (!ingredientsText.trim()) {
       toast.error("Please enter ingredients to analyze");
       return;
     }
-
     const ingredients = parseIngredients(ingredientsText);
     if (ingredients.length === 0) {
       toast.error("Please enter valid ingredients");
       return;
     }
-
     setIsLoading(true);
-    
     try {
-      const { data, error } = await supabase.functions.invoke('analyze-ingredients', {
-        body: { 
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('analyze-ingredients', {
+        body: {
           ingredients,
           quizResults
         }
       });
-
       if (error) {
         console.error('Error analyzing ingredients:', error);
         throw new Error('Failed to analyze ingredients');
       }
-
       if (data.success) {
         setAnalysisResult(data.analysis);
         toast.success(`Analysis complete for ${ingredients.length} ingredient${ingredients.length > 1 ? 's' : ''}!`);
@@ -109,7 +94,6 @@ const IngredientChecker = () => {
       setIsLoading(false);
     }
   };
-
   const getSafetyIcon = (safety: string) => {
     switch (safety) {
       case "safe":
@@ -122,7 +106,6 @@ const IngredientChecker = () => {
         return <Info className="w-6 h-6 text-gray-600" />;
     }
   };
-
   const getSafetyColor = (safety: string) => {
     switch (safety) {
       case "safe":
@@ -135,7 +118,6 @@ const IngredientChecker = () => {
         return "border-gray-200 bg-gray-50";
     }
   };
-
   const getCompatibilityColor = (compatibility: string) => {
     switch (compatibility) {
       case "excellent":
@@ -150,16 +132,8 @@ const IngredientChecker = () => {
         return "border-gray-500 bg-gray-50 text-gray-800";
     }
   };
-
-  const commonIngredientsList = [
-    "Salicylic Acid, Hyaluronic Acid, Niacinamide",
-    "Retinol, Vitamin C, Peptides", 
-    "Glycolic Acid, Ceramides, Squalane",
-    "AHA, BHA, Vitamin E"
-  ];
-
-  return (
-    <div className="min-h-screen py-12 px-4">
+  const commonIngredientsList = ["Salicylic Acid, Hyaluronic Acid, Niacinamide", "Retinol, Vitamin C, Peptides", "Glycolic Acid, Ceramides, Squalane", "AHA, BHA, Vitamin E"];
+  return <div className="min-h-screen py-12 px-4">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -168,15 +142,13 @@ const IngredientChecker = () => {
               <Sparkles className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Multi-Ingredient Analyzer</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Ingredient Checker</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Get comprehensive AI analysis of multiple skincare ingredients based on your skin profile{quizResults ? ` (${quizResults.skinType} skin)` : ''}
           </p>
-          {!quizResults && (
-            <p className="text-sm text-primary mt-2">
+          {!quizResults && <p className="text-sm text-primary mt-2">
               💡 Take our quiz first for personalized recommendations!
-            </p>
-          )}
+            </p>}
         </div>
 
         {/* Input Section */}
@@ -189,19 +161,9 @@ const IngredientChecker = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <Textarea
-                value={ingredientsText}
-                onChange={(e) => setIngredientsText(e.target.value)}
-                placeholder="Enter multiple ingredients separated by commas or new lines&#10;&#10;Example:&#10;Salicylic Acid, Hyaluronic Acid, Niacinamide&#10;Retinol&#10;Vitamin C"
-                className="min-h-[100px] resize-none"
-              />
+              <Textarea value={ingredientsText} onChange={e => setIngredientsText(e.target.value)} placeholder="Enter multiple ingredients separated by commas or new lines&#10;&#10;Example:&#10;Salicylic Acid, Hyaluronic Acid, Niacinamide&#10;Retinol&#10;Vitamin C" className="min-h-[100px] resize-none" />
               
-              <Button 
-                onClick={handleAnalyze} 
-                disabled={isLoading || !ingredientsText.trim()}
-                className="btn-hero w-full"
-                size="lg"
-              >
+              <Button onClick={handleAnalyze} disabled={isLoading || !ingredientsText.trim()} className="btn-hero w-full" size="lg">
                 {isLoading ? "Analyzing..." : "Analyze All Ingredients"}
               </Button>
             </div>
@@ -210,24 +172,16 @@ const IngredientChecker = () => {
             <div className="space-y-2 mt-4">
               <p className="text-sm text-muted-foreground">Quick fill examples:</p>
               <div className="grid gap-2">
-                {commonIngredientsList.map((example, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors justify-start p-2 h-auto text-left"
-                    onClick={() => setIngredientsText(example)}
-                  >
+                {commonIngredientsList.map((example, index) => <Badge key={index} variant="outline" className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors justify-start p-2 h-auto text-left" onClick={() => setIngredientsText(example)}>
                     {example}
-                  </Badge>
-                ))}
+                  </Badge>)}
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Analysis Results */}
-        {analysisResult && (
-          <div className="space-y-6">
+        {analysisResult && <div className="space-y-6">
             {/* Overall Assessment */}
             <Card className={`shadow-medium ${getCompatibilityColor(analysisResult.overallAssessment.compatibility)}`}>
               <CardHeader>
@@ -236,11 +190,7 @@ const IngredientChecker = () => {
                     <Shield className="w-6 h-6 mr-2" />
                     Overall Assessment
                   </CardTitle>
-                  <Badge 
-                    variant={analysisResult.overallAssessment.riskLevel === "low" ? "default" : 
-                             analysisResult.overallAssessment.riskLevel === "medium" ? "secondary" : "destructive"}
-                    className="capitalize text-sm"
-                  >
+                  <Badge variant={analysisResult.overallAssessment.riskLevel === "low" ? "default" : analysisResult.overallAssessment.riskLevel === "medium" ? "secondary" : "destructive"} className="capitalize text-sm">
                     {analysisResult.overallAssessment.riskLevel} Risk
                   </Badge>
                 </div>
@@ -255,16 +205,14 @@ const IngredientChecker = () => {
                     <p className="text-sm leading-relaxed">{analysisResult.overallAssessment.suitabilityForProfile}</p>
                   </div>
                   
-                  {quizResults && (
-                    <div className="p-3 bg-white/50 rounded-lg">
+                  {quizResults && <div className="p-3 bg-white/50 rounded-lg">
                       <p className="text-xs text-muted-foreground mb-2">Analysis based on your profile:</p>
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary" className="text-xs">{quizResults.skinType} skin</Badge>
                         <Badge variant="outline" className="text-xs">{quizResults.climate} climate</Badge>
                         <Badge variant="outline" className="text-xs">{quizResults.concerns}</Badge>
                       </div>
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </CardContent>
             </Card>
@@ -279,17 +227,12 @@ const IngredientChecker = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {analysisResult.ingredientAnalysis.map((ingredient, index) => (
-                    <div key={index} className={`p-4 rounded-lg border ${getSafetyColor(ingredient.safety)}`}>
+                  {analysisResult.ingredientAnalysis.map((ingredient, index) => <div key={index} className={`p-4 rounded-lg border ${getSafetyColor(ingredient.safety)}`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-lg">{ingredient.name}</h4>
                         <div className="flex items-center space-x-2">
                           {getSafetyIcon(ingredient.safety)}
-                          <Badge 
-                            variant={ingredient.safety === "safe" ? "default" : 
-                                   ingredient.safety === "caution" ? "secondary" : "destructive"}
-                            className="capitalize"
-                          >
+                          <Badge variant={ingredient.safety === "safe" ? "default" : ingredient.safety === "caution" ? "secondary" : "destructive"} className="capitalize">
                             {ingredient.safety}
                           </Badge>
                         </div>
@@ -302,50 +245,39 @@ const IngredientChecker = () => {
                         </div>
                         
                         <div className="grid md:grid-cols-2 gap-4">
-                          {ingredient.benefits.length > 0 && (
-                            <div>
+                          {ingredient.benefits.length > 0 && <div>
                               <h5 className="font-semibold text-green-800 flex items-center mb-2">
                                 <CheckCircle className="w-4 h-4 mr-1" />
                                 Benefits
                               </h5>
                               <ul className="space-y-1">
-                                {ingredient.benefits.map((benefit, idx) => (
-                                  <li key={idx} className="text-xs flex items-start">
+                                {ingredient.benefits.map((benefit, idx) => <li key={idx} className="text-xs flex items-start">
                                     <div className="w-1 h-1 rounded-full bg-green-600 mr-2 mt-1.5"></div>
                                     {benefit}
-                                  </li>
-                                ))}
+                                  </li>)}
                               </ul>
-                            </div>
-                          )}
+                            </div>}
                           
-                          {ingredient.concerns.length > 0 && (
-                            <div>
+                          {ingredient.concerns.length > 0 && <div>
                               <h5 className="font-semibold text-orange-800 flex items-center mb-2">
                                 <AlertTriangle className="w-4 h-4 mr-1" />
                                 Concerns
                               </h5>
                               <ul className="space-y-1">
-                                {ingredient.concerns.map((concern, idx) => (
-                                  <li key={idx} className="text-xs flex items-start">
+                                {ingredient.concerns.map((concern, idx) => <li key={idx} className="text-xs flex items-start">
                                     <div className="w-1 h-1 rounded-full bg-orange-600 mr-2 mt-1.5"></div>
                                     {concern}
-                                  </li>
-                                ))}
+                                  </li>)}
                               </ul>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                         
-                        {ingredient.interactionsWith.length > 0 && (
-                          <div className="p-2 bg-blue-50 rounded text-xs">
+                        {ingredient.interactionsWith.length > 0 && <div className="p-2 bg-blue-50 rounded text-xs">
                             <span className="font-medium">Interactions with: </span>
                             {ingredient.interactionsWith.join(', ')}
-                          </div>
-                        )}
+                          </div>}
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
@@ -366,51 +298,38 @@ const IngredientChecker = () => {
                   <p className="text-sm leading-relaxed">{analysisResult.personalizedAdvice.routineIntegration}</p>
                 </div>
                 
-                {analysisResult.personalizedAdvice.precautions.length > 0 && (
-                  <div>
+                {analysisResult.personalizedAdvice.precautions.length > 0 && <div>
                     <h4 className="font-semibold mb-2 text-orange-700">Important Precautions:</h4>
                     <ul className="space-y-1">
-                      {analysisResult.personalizedAdvice.precautions.map((precaution, index) => (
-                        <li key={index} className="text-sm flex items-start">
+                      {analysisResult.personalizedAdvice.precautions.map((precaution, index) => <li key={index} className="text-sm flex items-start">
                           <div className="w-2 h-2 rounded-full bg-orange-600 mr-2 mt-1.5"></div>
                           {precaution}
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
-                  </div>
-                )}
+                  </div>}
                 
-                {analysisResult.personalizedAdvice.alternatives.length > 0 && (
-                  <div>
+                {analysisResult.personalizedAdvice.alternatives.length > 0 && <div>
                     <h4 className="font-semibold mb-2 text-green-700">Better Alternatives:</h4>
                     <ul className="space-y-1">
-                      {analysisResult.personalizedAdvice.alternatives.map((alternative, index) => (
-                        <li key={index} className="text-sm flex items-start">
+                      {analysisResult.personalizedAdvice.alternatives.map((alternative, index) => <li key={index} className="text-sm flex items-start">
                           <div className="w-2 h-2 rounded-full bg-green-600 mr-2 mt-1.5"></div>
                           {alternative}
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
-                  </div>
-                )}
+                  </div>}
                 
-                {analysisResult.climateConsiderations && (
-                  <div className="p-3 bg-blue-50 rounded-lg">
+                {analysisResult.climateConsiderations && <div className="p-3 bg-blue-50 rounded-lg">
                     <h4 className="font-semibold mb-1 text-blue-800">Climate Considerations:</h4>
                     <p className="text-sm text-blue-700">{analysisResult.climateConsiderations}</p>
-                  </div>
-                )}
+                  </div>}
                 
-                {analysisResult.dietarySupport && (
-                  <div className="p-3 bg-green-50 rounded-lg">
+                {analysisResult.dietarySupport && <div className="p-3 bg-green-50 rounded-lg">
                     <h4 className="font-semibold mb-1 text-green-800">Dietary Support:</h4>
                     <p className="text-sm text-green-700">{analysisResult.dietarySupport}</p>
-                  </div>
-                )}
+                  </div>}
               </CardContent>
             </Card>
-          </div>
-        )}
+          </div>}
 
         {/* Educational Section */}
         <Card className="mt-8 shadow-soft">
@@ -441,8 +360,6 @@ const IngredientChecker = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default IngredientChecker;
