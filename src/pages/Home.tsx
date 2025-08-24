@@ -61,7 +61,7 @@ const Home = () => {
                 </Link>
               </Button>
               
-              <Button asChild variant="outline" size="lg" className="btn-glass text-lg px-8 py-6 hover-lift text-foreground">
+              <Button asChild variant="outline" size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 text-lg px-8 py-6 hover-lift">
                 <Link to="/routines">
                   Browse Routines
                 </Link>
