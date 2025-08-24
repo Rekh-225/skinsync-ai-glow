@@ -1,133 +1,110 @@
-import { useState } from "react";
-import { Search, CheckCircle, AlertTriangle, Info, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, CheckCircle, AlertTriangle, Info, Sparkles, Users, TrendingUp, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
-interface IngredientResult {
+interface IngredientAnalysis {
   name: string;
   safety: "safe" | "caution" | "avoid";
-  skinTypes: string[];
+  personalizedRecommendation: string;
   benefits: string[];
   concerns: string[];
-  description: string;
+  interactionsWith: string[];
+}
+
+interface OverallAssessment {
+  compatibility: "excellent" | "good" | "caution" | "poor";
+  suitabilityForProfile: string;
+  riskLevel: "low" | "medium" | "high";
+}
+
+interface PersonalizedAdvice {
+  recommendedUsage: string;
+  precautions: string[];
+  alternatives: string[];
+  routineIntegration: string;
+}
+
+interface AnalysisResult {
+  overallAssessment: OverallAssessment;
+  ingredientAnalysis: IngredientAnalysis[];
+  personalizedAdvice: PersonalizedAdvice;
+  climateConsiderations?: string;
+  dietarySupport?: string;
+}
+
+interface QuizResults {
+  skinType: string;
+  climate: string;
+  dietHabits: string;
+  concerns: string;
 }
 
 const IngredientChecker = () => {
-  const [ingredient, setIngredient] = useState("");
-  const [result, setResult] = useState<IngredientResult | null>(null);
+  const [ingredientsText, setIngredientsText] = useState("");
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [quizResults, setQuizResults] = useState<QuizResults | null>(null);
 
-  // Mock ingredient database - in real implementation, this would be an API call
-  const ingredientDatabase: { [key: string]: IngredientResult } = {
-    "salicylic acid": {
-      name: "Salicylic Acid",
-      safety: "caution",
-      skinTypes: ["oily", "acne-prone"],
-      benefits: ["Unclogs pores", "Reduces blackheads", "Anti-inflammatory", "Gentle exfoliation"],
-      concerns: ["Can be drying", "May cause irritation in sensitive skin", "Start with low concentration"],
-      description: "A beta hydroxy acid (BHA) that penetrates pores to remove dead skin cells and excess oil. Excellent for acne-prone and oily skin types."
-    },
-    "hyaluronic acid": {
-      name: "Hyaluronic Acid",
-      safety: "safe",
-      skinTypes: ["all", "dry", "sensitive", "oily", "combination"],
-      benefits: ["Intense hydration", "Plumps skin", "Suitable for all skin types", "Non-comedogenic"],
-      concerns: [],
-      description: "A powerful humectant that can hold up to 1000 times its weight in water. Safe and beneficial for all skin types."
-    },
-    "retinol": {
-      name: "Retinol",
-      safety: "caution",
-      skinTypes: ["mature", "acne-prone"],
-      benefits: ["Anti-aging", "Reduces fine lines", "Improves skin texture", "Helps with acne"],
-      concerns: ["Can cause irritation", "Increases sun sensitivity", "Not for sensitive skin", "Start slowly"],
-      description: "A form of vitamin A that accelerates cell turnover. Powerful anti-aging ingredient but requires careful introduction."
-    },
-    "niacinamide": {
-      name: "Niacinamide",
-      safety: "safe",
-      skinTypes: ["all", "oily", "sensitive", "acne-prone"],
-      benefits: ["Reduces oil production", "Minimizes pores", "Anti-inflammatory", "Brightens skin"],
-      concerns: [],
-      description: "Also known as vitamin B3, this gentle ingredient helps regulate oil production and is suitable for all skin types, including sensitive skin."
-    },
-    "vitamin c": {
-      name: "Vitamin C",
-      safety: "safe",
-      skinTypes: ["all", "dull", "aging"],
-      benefits: ["Antioxidant protection", "Brightens skin", "Boosts collagen", "Fades dark spots"],
-      concerns: ["Choose stable forms", "May irritate sensitive skin in high concentrations"],
-      description: "A powerful antioxidant that protects against environmental damage and promotes collagen production."
-    },
-    "fragrance": {
-      name: "Fragrance/Parfum",
-      safety: "avoid",
-      skinTypes: ["sensitive"],
-      benefits: [],
-      concerns: ["Common allergen", "Can cause irritation", "No skincare benefits", "Avoid if sensitive"],
-      description: "Added for scent but offers no skincare benefits and is a common cause of skin irritation and allergic reactions."
+  useEffect(() => {
+    // Load quiz results from localStorage if available
+    const savedQuizResults = JSON.parse(localStorage.getItem("skinSyncQuizResults") || "null");
+    const savedPersonalizedData = JSON.parse(localStorage.getItem("skinSyncPersonalizedRoutine") || "null");
+    
+    if (savedQuizResults) {
+      setQuizResults(savedQuizResults);
+    } else if (savedPersonalizedData?.quizResults) {
+      setQuizResults(savedPersonalizedData.quizResults);
     }
+  }, []);
+
+  const parseIngredients = (text: string): string[] => {
+    return text
+      .split(/[,\n]/)
+      .map(ingredient => ingredient.trim())
+      .filter(ingredient => ingredient.length > 0);
   };
 
-  const handleSearch = async () => {
-    if (!ingredient.trim()) {
-      toast.error("Please enter an ingredient to check");
+  const handleAnalyze = async () => {
+    if (!ingredientsText.trim()) {
+      toast.error("Please enter ingredients to analyze");
+      return;
+    }
+
+    const ingredients = parseIngredients(ingredientsText);
+    if (ingredients.length === 0) {
+      toast.error("Please enter valid ingredients");
       return;
     }
 
     setIsLoading(true);
     
     try {
-      const searchKey = ingredient.toLowerCase().trim();
-      const found = ingredientDatabase[searchKey];
-      
-      if (found) {
-        setResult(found);
-        toast.success("Ingredient information found!");
-      } else {
-        // Try AI-powered ingredient analysis
-        try {
-          const { supabase } = await import("@/integrations/supabase/client");
-          const response = await supabase.functions.invoke('chat-ai', {
-            body: {
-              message: `Analyze the skincare ingredient "${ingredient}". Provide: 1) Safety level (safe/caution/avoid), 2) Suitable skin types, 3) Main benefits, 4) Potential concerns, 5) Brief description. Be concise and evidence-based.`,
-              context: "Ingredient analysis for skincare safety"
-            },
-          });
-
-          if (!response.error) {
-            const data = response.data;
-            // Parse AI response into structured format
-            setResult({
-              name: ingredient,
-              safety: "caution", // Default to caution for unknown ingredients
-              skinTypes: [],
-              benefits: [],
-              concerns: ["AI-analyzed ingredient", "Consult a dermatologist for personalized advice"],
-              description: data.response || "AI analysis of this ingredient. Please consult a skincare professional for personalized advice."
-            });
-            toast.success("AI analysis completed!");
-          } else {
-            throw new Error("AI analysis failed");
-          }
-        } catch (aiError) {
-          // Fallback to generic response
-          setResult({
-            name: ingredient,
-            safety: "caution",
-            skinTypes: [],
-            benefits: [],
-            concerns: ["Ingredient not found in database", "Consult a dermatologist for specific advice"],
-            description: "This ingredient is not in our database. For personalized advice about this ingredient, please consult with a dermatologist or skincare professional."
-          });
-          toast.info("Showing general advice - AI analysis unavailable");
+      const { data, error } = await supabase.functions.invoke('analyze-ingredients', {
+        body: { 
+          ingredients,
+          quizResults
         }
+      });
+
+      if (error) {
+        console.error('Error analyzing ingredients:', error);
+        throw new Error('Failed to analyze ingredients');
+      }
+
+      if (data.success) {
+        setAnalysisResult(data.analysis);
+        toast.success(`Analysis complete for ${ingredients.length} ingredient${ingredients.length > 1 ? 's' : ''}!`);
+      } else {
+        throw new Error(data.error || 'Unknown error occurred');
       }
     } catch (error) {
-      toast.error("Error checking ingredient. Please try again.");
+      console.error('Error:', error);
+      toast.error("Failed to analyze ingredients. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -159,9 +136,26 @@ const IngredientChecker = () => {
     }
   };
 
-  const commonIngredients = [
-    "Salicylic Acid", "Hyaluronic Acid", "Retinol", "Niacinamide", 
-    "Vitamin C", "Glycolic Acid", "Ceramides", "Peptides", "Fragrance"
+  const getCompatibilityColor = (compatibility: string) => {
+    switch (compatibility) {
+      case "excellent":
+        return "border-green-500 bg-green-50 text-green-800";
+      case "good":
+        return "border-blue-500 bg-blue-50 text-blue-800";
+      case "caution":
+        return "border-yellow-500 bg-yellow-50 text-yellow-800";
+      case "poor":
+        return "border-red-500 bg-red-50 text-red-800";
+      default:
+        return "border-gray-500 bg-gray-50 text-gray-800";
+    }
+  };
+
+  const commonIngredientsList = [
+    "Salicylic Acid, Hyaluronic Acid, Niacinamide",
+    "Retinol, Vitamin C, Peptides", 
+    "Glycolic Acid, Ceramides, Squalane",
+    "AHA, BHA, Vitamin E"
   ];
 
   return (
@@ -174,50 +168,56 @@ const IngredientChecker = () => {
               <Sparkles className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Ingredient Checker</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Multi-Ingredient Analyzer</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Check if skincare ingredients are suitable for your skin type and learn about their benefits and potential concerns
+            Get comprehensive AI analysis of multiple skincare ingredients based on your skin profile{quizResults ? ` (${quizResults.skinType} skin)` : ''}
           </p>
+          {!quizResults && (
+            <p className="text-sm text-primary mt-2">
+              💡 Take our quiz first for personalized recommendations!
+            </p>
+          )}
         </div>
 
-        {/* Search Section */}
+        {/* Input Section */}
         <Card className="shadow-medium mb-8">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Search className="w-5 h-5 mr-2 text-primary" />
-              Search Ingredient
+              Enter Ingredients to Analyze
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex space-x-4 mb-4">
-              <Input
-                value={ingredient}
-                onChange={(e) => setIngredient(e.target.value)}
-                placeholder="Enter ingredient name (e.g., Salicylic Acid, Retinol, Hyaluronic Acid)"
-                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                className="flex-1"
+            <div className="space-y-4">
+              <Textarea
+                value={ingredientsText}
+                onChange={(e) => setIngredientsText(e.target.value)}
+                placeholder="Enter multiple ingredients separated by commas or new lines&#10;&#10;Example:&#10;Salicylic Acid, Hyaluronic Acid, Niacinamide&#10;Retinol&#10;Vitamin C"
+                className="min-h-[100px] resize-none"
               />
+              
               <Button 
-                onClick={handleSearch} 
-                disabled={isLoading}
-                className="btn-hero px-8"
+                onClick={handleAnalyze} 
+                disabled={isLoading || !ingredientsText.trim()}
+                className="btn-hero w-full"
+                size="lg"
               >
-                {isLoading ? "Checking..." : "Check"}
+                {isLoading ? "Analyzing..." : "Analyze All Ingredients"}
               </Button>
             </div>
             
-            {/* Common Ingredients */}
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Popular ingredients to check:</p>
-              <div className="flex flex-wrap gap-2">
-                {commonIngredients.map((ing) => (
+            {/* Quick Fill Examples */}
+            <div className="space-y-2 mt-4">
+              <p className="text-sm text-muted-foreground">Quick fill examples:</p>
+              <div className="grid gap-2">
+                {commonIngredientsList.map((example, index) => (
                   <Badge
-                    key={ing}
+                    key={index}
                     variant="outline"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                    onClick={() => setIngredient(ing)}
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors justify-start p-2 h-auto text-left"
+                    onClick={() => setIngredientsText(example)}
                   >
-                    {ing}
+                    {example}
                   </Badge>
                 ))}
               </div>
@@ -225,120 +225,216 @@ const IngredientChecker = () => {
           </CardContent>
         </Card>
 
-        {/* Results Section */}
-        {result && (
-          <Card className={`shadow-medium ${getSafetyColor(result.safety)}`}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">{result.name}</CardTitle>
-                <div className="flex items-center space-x-2">
-                  {getSafetyIcon(result.safety)}
+        {/* Analysis Results */}
+        {analysisResult && (
+          <div className="space-y-6">
+            {/* Overall Assessment */}
+            <Card className={`shadow-medium ${getCompatibilityColor(analysisResult.overallAssessment.compatibility)}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-2xl flex items-center">
+                    <Shield className="w-6 h-6 mr-2" />
+                    Overall Assessment
+                  </CardTitle>
                   <Badge 
-                    variant={result.safety === "safe" ? "default" : result.safety === "caution" ? "secondary" : "destructive"}
-                    className="capitalize"
+                    variant={analysisResult.overallAssessment.riskLevel === "low" ? "default" : 
+                             analysisResult.overallAssessment.riskLevel === "medium" ? "secondary" : "destructive"}
+                    className="capitalize text-sm"
                   >
-                    {result.safety === "safe" ? "Generally Safe" : result.safety === "caution" ? "Use with Caution" : "Avoid if Sensitive"}
+                    {analysisResult.overallAssessment.riskLevel} Risk
                   </Badge>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Description */}
-              <div>
-                <p className="text-muted-foreground leading-relaxed">{result.description}</p>
-              </div>
-
-              {/* Skin Types */}
-              {result.skinTypes.length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-2 text-foreground">Suitable for:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {result.skinTypes.map((type) => (
-                      <Badge key={type} variant="secondary" className="capitalize">
-                        {type} skin
-                      </Badge>
-                    ))}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold mb-2 flex items-center">
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Compatibility: {analysisResult.overallAssessment.compatibility.toUpperCase()}
+                    </h4>
+                    <p className="text-sm leading-relaxed">{analysisResult.overallAssessment.suitabilityForProfile}</p>
                   </div>
+                  
+                  {quizResults && (
+                    <div className="p-3 bg-white/50 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-2">Analysis based on your profile:</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="secondary" className="text-xs">{quizResults.skinType} skin</Badge>
+                        <Badge variant="outline" className="text-xs">{quizResults.climate} climate</Badge>
+                        <Badge variant="outline" className="text-xs">{quizResults.concerns}</Badge>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </CardContent>
+            </Card>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Benefits */}
-                {result.benefits.length > 0 && (
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-green-800 flex items-center">
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Benefits
-                    </h4>
-                    <ul className="space-y-2">
-                      {result.benefits.map((benefit, index) => (
-                        <li key={index} className="flex items-start text-sm">
-                          <div className="w-2 h-2 rounded-full bg-green-600 mr-2 mt-2"></div>
-                          {benefit}
+            {/* Individual Ingredient Analysis */}
+            <Card className="shadow-medium">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Users className="w-5 h-5 mr-2 text-primary" />
+                  Individual Ingredient Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {analysisResult.ingredientAnalysis.map((ingredient, index) => (
+                    <div key={index} className={`p-4 rounded-lg border ${getSafetyColor(ingredient.safety)}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-lg">{ingredient.name}</h4>
+                        <div className="flex items-center space-x-2">
+                          {getSafetyIcon(ingredient.safety)}
+                          <Badge 
+                            variant={ingredient.safety === "safe" ? "default" : 
+                                   ingredient.safety === "caution" ? "secondary" : "destructive"}
+                            className="capitalize"
+                          >
+                            {ingredient.safety}
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-sm font-medium text-primary mb-1">Personalized Recommendation:</p>
+                          <p className="text-sm leading-relaxed">{ingredient.personalizedRecommendation}</p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {ingredient.benefits.length > 0 && (
+                            <div>
+                              <h5 className="font-semibold text-green-800 flex items-center mb-2">
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Benefits
+                              </h5>
+                              <ul className="space-y-1">
+                                {ingredient.benefits.map((benefit, idx) => (
+                                  <li key={idx} className="text-xs flex items-start">
+                                    <div className="w-1 h-1 rounded-full bg-green-600 mr-2 mt-1.5"></div>
+                                    {benefit}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {ingredient.concerns.length > 0 && (
+                            <div>
+                              <h5 className="font-semibold text-orange-800 flex items-center mb-2">
+                                <AlertTriangle className="w-4 h-4 mr-1" />
+                                Concerns
+                              </h5>
+                              <ul className="space-y-1">
+                                {ingredient.concerns.map((concern, idx) => (
+                                  <li key={idx} className="text-xs flex items-start">
+                                    <div className="w-1 h-1 rounded-full bg-orange-600 mr-2 mt-1.5"></div>
+                                    {concern}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {ingredient.interactionsWith.length > 0 && (
+                          <div className="p-2 bg-blue-50 rounded text-xs">
+                            <span className="font-medium">Interactions with: </span>
+                            {ingredient.interactionsWith.join(', ')}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Personalized Advice */}
+            <Card className="shadow-medium bg-gradient-to-r from-primary/5 to-secondary/5">
+              <CardHeader>
+                <CardTitle className="text-primary">Personalized Usage Guide</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Recommended Usage:</h4>
+                  <p className="text-sm leading-relaxed">{analysisResult.personalizedAdvice.recommendedUsage}</p>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-2">Routine Integration:</h4>
+                  <p className="text-sm leading-relaxed">{analysisResult.personalizedAdvice.routineIntegration}</p>
+                </div>
+                
+                {analysisResult.personalizedAdvice.precautions.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2 text-orange-700">Important Precautions:</h4>
+                    <ul className="space-y-1">
+                      {analysisResult.personalizedAdvice.precautions.map((precaution, index) => (
+                        <li key={index} className="text-sm flex items-start">
+                          <div className="w-2 h-2 rounded-full bg-orange-600 mr-2 mt-1.5"></div>
+                          {precaution}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-
-                {/* Concerns */}
-                {result.concerns.length > 0 && (
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-orange-800 flex items-center">
-                      <AlertTriangle className="w-4 h-4 mr-2" />
-                      {result.safety === "avoid" ? "Concerns" : "Precautions"}
-                    </h4>
-                    <ul className="space-y-2">
-                      {result.concerns.map((concern, index) => (
-                        <li key={index} className="flex items-start text-sm">
-                          <div className="w-2 h-2 rounded-full bg-orange-600 mr-2 mt-2"></div>
-                          {concern}
+                
+                {analysisResult.personalizedAdvice.alternatives.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2 text-green-700">Better Alternatives:</h4>
+                    <ul className="space-y-1">
+                      {analysisResult.personalizedAdvice.alternatives.map((alternative, index) => (
+                        <li key={index} className="text-sm flex items-start">
+                          <div className="w-2 h-2 rounded-full bg-green-600 mr-2 mt-1.5"></div>
+                          {alternative}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-              </div>
-
-              {/* Recommendation */}
-              <div className="p-4 bg-white/50 rounded-lg border">
-                <h4 className="font-semibold mb-2 text-primary">💡 Our Recommendation:</h4>
-                <p className="text-sm text-muted-foreground">
-                  {result.safety === "safe" 
-                    ? "This ingredient is generally well-tolerated by most skin types. Start with a lower concentration if you're new to it."
-                    : result.safety === "caution"
-                    ? "This ingredient can be beneficial but requires careful introduction. Start with a low concentration, use 2-3 times per week initially, and always use sunscreen during the day."
-                    : "This ingredient may cause irritation, especially for sensitive skin types. Consider alternatives or consult a dermatologist before use."
-                  }
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+                
+                {analysisResult.climateConsiderations && (
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold mb-1 text-blue-800">Climate Considerations:</h4>
+                    <p className="text-sm text-blue-700">{analysisResult.climateConsiderations}</p>
+                  </div>
+                )}
+                
+                {analysisResult.dietarySupport && (
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <h4 className="font-semibold mb-1 text-green-800">Dietary Support:</h4>
+                    <p className="text-sm text-green-700">{analysisResult.dietarySupport}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* Educational Section */}
         <Card className="mt-8 shadow-soft">
           <CardHeader>
-            <CardTitle>How to Use This Tool</CardTitle>
+            <CardTitle>How to Use This Advanced Analyzer</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-semibold mb-3 text-primary">Getting Started</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Copy ingredient names from product labels</li>
-                  <li>• Search one ingredient at a time</li>
-                  <li>• Check each active ingredient in your routine</li>
-                  <li>• Take note of any cautions or warnings</li>
+                  <li>• Copy full ingredient lists from product labels</li>
+                  <li>• Separate ingredients with commas or new lines</li>
+                  <li>• Include active ingredients and key components</li>
+                  <li>• Take our quiz first for personalized analysis</li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-3 text-secondary">Important Notes</h4>
+                <h4 className="font-semibold mb-3 text-secondary">What You'll Get</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Always patch test new ingredients</li>
-                  <li>• Start with lower concentrations</li>
-                  <li>• Consult a dermatologist for specific concerns</li>
-                  <li>• This tool provides general guidance only</li>
+                  <li>• Comprehensive compatibility analysis</li>
+                  <li>• Ingredient interaction warnings</li>
+                  <li>• Personalized usage recommendations</li>
+                  <li>• Climate and diet-specific advice</li>
                 </ul>
               </div>
             </div>

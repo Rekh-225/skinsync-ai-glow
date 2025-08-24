@@ -66,3 +66,7 @@ verify_jwt = false
 [[edge-functions.functions]]
 name = "generate-routine"
 verify_jwt = false
+
+[[edge-functions.functions]]
+name = "analyze-ingredients"
+verify_jwt = false
