@@ -8,6 +8,7 @@ import Header from "./components/layout/Header";
 import ChatBot from "./components/ChatBot";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
+import QuizResults from "./pages/QuizResults";
 import Routines from "./pages/Routines";
 import Diet from "./pages/Diet";
 import Grooming from "./pages/Grooming";
@@ -34,6 +35,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/quiz" element={<Quiz />} />
+                <Route path="/quiz-results" element={<QuizResults />} />
                 <Route path="/routines" element={<Routines />} />
                 <Route path="/diet" element={<Diet />} />
                 <Route path="/grooming" element={<Grooming />} />

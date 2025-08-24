@@ -48,15 +48,38 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      // Get quiz results for context
-      const quizResults = localStorage.getItem("skinSyncQuizResults");
-      const context = quizResults ? JSON.parse(quizResults) : null;
+      // Get personalized routine data for enhanced context
+      const personalizedData = localStorage.getItem("skinSyncPersonalizedRoutine");
+      let context = "skincare consultation";
+      
+      if (personalizedData) {
+        const data = JSON.parse(personalizedData);
+        context = `User's personalized skincare profile: 
+        - Skin Type: ${data.quizResults.skinType}
+        - Climate: ${data.quizResults.climate}
+        - Diet Habits: ${data.quizResults.dietHabits}
+        - Main Concerns: ${data.quizResults.concerns}
+        
+        Their personalized routine includes:
+        Morning: ${data.routine.personalizedRoutine?.morning?.join(', ') || 'Basic morning routine'}
+        Evening: ${data.routine.personalizedRoutine?.evening?.join(', ') || 'Basic evening routine'}
+        Key Recommendations: ${data.routine.keyRecommendations?.join(', ') || 'General skincare advice'}
+        
+        Please provide personalized advice based on this profile and answer questions about their specific routine.`;
+      } else {
+        // Fallback to basic quiz results
+        const quizResults = localStorage.getItem("skinSyncQuizResults");
+        if (quizResults) {
+          const data = JSON.parse(quizResults);
+          context = `User has ${data.skinType} skin, lives in ${data.climate} climate, main concern is ${data.concerns}`;
+        }
+      }
       
       const { supabase } = await import("@/integrations/supabase/client");
       const response = await supabase.functions.invoke('chat-ai', {
         body: {
           message,
-          context: context ? `User has ${context.skinType} skin, lives in ${context.climate} climate, main concern is ${context.concerns}` : null,
+          context: context,
         },
       });
 

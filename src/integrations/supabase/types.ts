@@ -91,6 +91,44 @@ export type Database = {
           },
         ]
       }
+      personalized_routines: {
+        Row: {
+          ai_recommendations: string | null
+          created_at: string
+          id: string
+          quiz_response_id: string | null
+          routine_data: Json
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          ai_recommendations?: string | null
+          created_at?: string
+          id?: string
+          quiz_response_id?: string | null
+          routine_data: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          ai_recommendations?: string | null
+          created_at?: string
+          id?: string
+          quiz_response_id?: string | null
+          routine_data?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personalized_routines_quiz_response_id_fkey"
+            columns: ["quiz_response_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -121,8 +159,9 @@ export type Database = {
       quiz_responses: {
         Row: {
           climate: string
+          concerns: string | null
           created_at: string
-          diet_habits: string[] | null
+          diet_habits: string | null
           id: string
           session_id: string
           skin_type: string
@@ -130,8 +169,9 @@ export type Database = {
         }
         Insert: {
           climate: string
+          concerns?: string | null
           created_at?: string
-          diet_habits?: string[] | null
+          diet_habits?: string | null
           id?: string
           session_id: string
           skin_type: string
@@ -139,8 +179,9 @@ export type Database = {
         }
         Update: {
           climate?: string
+          concerns?: string | null
           created_at?: string
-          diet_habits?: string[] | null
+          diet_habits?: string | null
           id?: string
           session_id?: string
           skin_type?: string

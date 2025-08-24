@@ -85,12 +85,12 @@ const Quiz = () => {
   };
 
   const handleSubmit = () => {
-    // Store answers in localStorage for now
+    // Store answers in localStorage for backup
     localStorage.setItem("skinSyncQuizResults", JSON.stringify(answers));
-    toast.success("Quiz completed! Here are your personalized recommendations.");
+    toast.success("Quiz completed! Generating your personalized routine...");
     
-    // Navigate to routines page with results
-    navigate("/routines", { state: { quizResults: answers } });
+    // Navigate to quiz results page with results
+    navigate("/quiz-results", { state: { quizResults: answers } });
   };
 
   const currentQuestion = questions[currentStep];
