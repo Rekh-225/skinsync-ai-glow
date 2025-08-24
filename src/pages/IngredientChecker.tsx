@@ -163,8 +163,8 @@ const IngredientChecker = () => {
             <div className="space-y-4">
               <Textarea value={ingredientsText} onChange={e => setIngredientsText(e.target.value)} placeholder="Enter multiple ingredients separated by commas or new lines&#10;&#10;Example:&#10;Salicylic Acid, Hyaluronic Acid, Niacinamide&#10;Retinol&#10;Vitamin C" className="min-h-[100px] resize-none" />
               
-              <Button onClick={handleAnalyze} disabled={isLoading || !ingredientsText.trim()} size="lg" className="btn-hero w-full text-gray-50 bg-green-400 hover:bg-green-300">
-                {isLoading ? "Analyzing..." : "Analyze All Ingredients"}
+              <Button onClick={handleAnalyze} disabled={isLoading || !ingredientsText.trim()} size="lg" className="w-full">
+                {isLoading ? "Analyzing..." : "Analyze Ingredients"}
               </Button>
             </div>
             
