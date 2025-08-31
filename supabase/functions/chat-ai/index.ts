@@ -14,9 +14,9 @@ serve(async (req) => {
   try {
     const { message, context } = await req.json()
     
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not found')
+    const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY')
+    if (!openRouterApiKey) {
+      throw new Error('⚠️ Please add a valid OpenRouter API key in project secrets.')
     }
 
     const systemPrompt = `You are SkinSync's AI assistant, an expert in skincare, nutrition, and grooming. 
@@ -35,14 +35,16 @@ Context about the user: ${context || 'No specific context provided'}
 
 Respond in a helpful, encouraging tone suitable for young adults and students.`
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'SkinSync',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'openai/gpt-oss-20b',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }
@@ -54,7 +56,7 @@ Respond in a helpful, encouraging tone suitable for young adults and students.`
 
     if (!response.ok) {
       const error = await response.text()
-      throw new Error(`OpenAI API error: ${error}`)
+      throw new Error(`OpenRouter API error: ${error}`)
     }
 
     const data = await response.json()
