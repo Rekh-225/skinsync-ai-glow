@@ -36,7 +36,10 @@ const ChatBot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const chatContainer = messagesEndRef.current?.parentElement;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -171,7 +174,7 @@ const ChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-96 h-[500px] shadow-strong z-50 flex flex-col">
+        <Card className="fixed bottom-6 right-6 w-96 max-h-[500px] shadow-strong z-50 flex flex-col justify-between">
           <CardHeader className="bg-primary text-primary-foreground rounded-t-lg flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -193,19 +196,23 @@ const ChatBot = () => {
 
           <CardContent className="flex-1 flex flex-col p-0">
             {/* Messages */}
-            <ScrollArea className="flex-1 h-[300px]">
-              <div className="p-4 space-y-4">
+            <div className="flex-1 max-h-[400px] overflow-y-auto p-2">
+              <div className="p-2 space-y-2">
                 {messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
                   >
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg whitespace-pre-line break-words ${
+                     <div
+                      className={`max-w-[80%] p-3 mb-2 rounded-lg break-words ${
                         message.isBot
                           ? "bg-muted text-muted-foreground"
                           : "bg-primary text-primary-foreground"
                       }`}
+                      style={{ 
+                        whiteSpace: "normal", 
+                        wordWrap: "break-word" 
+                      }}
                     >
                       {message.text}
                     </div>
@@ -224,7 +231,7 @@ const ChatBot = () => {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
 
             {/* Quick Options */}
             {messages.length === 1 && (
