@@ -16,9 +16,9 @@ serve(async (req) => {
     const { quizResults, sessionId } = await req.json();
     console.log('Generating routine for:', quizResults);
 
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
+    if (!openRouterApiKey) {
+      throw new Error('⚠️ Please add a valid OpenRouter API key in project secrets.');
     }
 
     // Create Supabase client
@@ -67,27 +67,29 @@ Provide a comprehensive response in the following JSON format:
 
 Make the routine highly specific to their profile. Consider their climate when suggesting products and application frequency. Address their main concerns directly with targeted treatments.`;
 
-    // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call OpenRouter API
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'SkinSync',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'openai/gpt-oss-20b',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Generate a personalized skincare routine for my profile.` }
         ],
-        max_completion_tokens: 2000,
+        max_tokens: 2000,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('OpenAI API Error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      console.error('OpenRouter API Error:', errorData);
+      throw new Error(`OpenRouter API error: ${response.status}`);
     }
 
     const data = await response.json();
