@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
 interface Message {
@@ -32,6 +33,15 @@ const ChatBot = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -183,35 +193,38 @@ const ChatBot = () => {
 
           <CardContent className="flex-1 flex flex-col p-0">
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
-                >
+            <ScrollArea className="flex-1 h-[300px]">
+              <div className="p-4 space-y-4">
+                {messages.map((message) => (
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg whitespace-pre-line ${
-                      message.isBot
-                        ? "bg-muted text-muted-foreground"
-                        : "bg-primary text-primary-foreground"
-                    }`}
+                    key={message.id}
+                    className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
                   >
-                    {message.text}
-                  </div>
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-muted text-muted-foreground p-3 rounded-lg">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.4s" }}></div>
+                    <div
+                      className={`max-w-[80%] p-3 rounded-lg whitespace-pre-line break-words ${
+                        message.isBot
+                          ? "bg-muted text-muted-foreground"
+                          : "bg-primary text-primary-foreground"
+                      }`}
+                    >
+                      {message.text}
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                ))}
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-muted text-muted-foreground p-3 rounded-lg">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.4s" }}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
 
             {/* Quick Options */}
             {messages.length === 1 && (
