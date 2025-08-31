@@ -82,17 +82,18 @@ const Home = () => {
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <Button asChild size="lg" className="text-lg px-8 py-6 hover-lift">
-              <a 
-                href="https://www.youtube.com/shorts/Om0NMeOCMg4" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-3"
-              >
-                <Play className="h-6 w-6" />
-                Watch Tutorial: How to Check Your Skin Type
-              </a>
-            </Button>
+            <Card className="overflow-hidden shadow-strong">
+              <div className="relative">
+                <iframe
+                  className="w-full aspect-video"
+                  src="https://www.youtube.com/embed/Om0NMeOCMg4"
+                  title="How to Check Your Skin Type"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </Card>
           </div>
         </div>
       </section>
