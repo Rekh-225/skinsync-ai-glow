@@ -8,6 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, Sunrise, Moon, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrCreateSessionId } from "@/lib/session";
 import ChatBot from "@/components/ChatBot";
 
 interface QuizResults {
@@ -64,7 +65,7 @@ const QuizResults = () => {
     try {
       setLoading(true);
       
-      const sessionId = `quiz_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+      const sessionId = getOrCreateSessionId();
       
       const { data, error } = await supabase.functions.invoke('generate-routine', {
         body: { 
