@@ -171,100 +171,99 @@ const ChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-96 h-[500px] shadow-strong z-50 flex flex-col">
-          <CardHeader className="bg-primary text-primary-foreground rounded-t-lg flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <CardTitle className="text-lg">SkinSync Assistant</CardTitle>
+        <div className="fixed bottom-6 right-6 w-96 h-[520px] shadow-strong z-50 bg-background border rounded-lg flex flex-col">
+          {/* Header */}
+          <div className="bg-primary text-primary-foreground rounded-t-lg px-4 py-3 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsOpen(false)}
-                className="text-primary-foreground hover:bg-primary-foreground/20"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <h3 className="text-lg font-semibold">SkinSync Assistant</h3>
             </div>
-          </CardHeader>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(false)}
+              className="text-primary-foreground hover:bg-primary-foreground/20 h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
 
-          <CardContent className="flex-1 flex flex-col p-0">
-            {/* Messages */}
-            <ScrollArea className="flex-1 h-[300px]">
-              <div className="p-4 space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg whitespace-pre-line break-words ${
-                        message.isBot
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-primary text-primary-foreground"
-                      }`}
-                    >
-                      {message.text}
-                    </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted text-muted-foreground p-3 rounded-lg">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.4s" }}></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto max-h-[450px] p-4 space-y-3">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
+              >
+                <div
+                  className={`max-w-[85%] px-4 py-2 rounded-2xl break-words whitespace-normal ${
+                    message.isBot
+                      ? "bg-muted text-muted-foreground rounded-bl-md"
+                      : "bg-primary text-primary-foreground rounded-br-md"
+                  }`}
+                  style={{ wordWrap: "break-word", overflowWrap: "break-word" }}
+                >
+                  {message.text}
+                </div>
               </div>
-            </ScrollArea>
-
-            {/* Quick Options */}
-            {messages.length === 1 && (
-              <div className="p-4 border-t space-y-2">
-                <p className="text-sm text-muted-foreground">Quick options:</p>
-                <div className="flex flex-wrap gap-2">
-                  {quickOptions.map((option) => (
-                    <Badge
-                      key={option.value}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                      onClick={() => handleQuickOption(option.value)}
-                    >
-                      {option.label}
-                    </Badge>
-                  ))}
+            ))}
+            
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-muted text-muted-foreground px-4 py-2 rounded-2xl rounded-bl-md">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.4s" }}></div>
+                  </div>
                 </div>
               </div>
             )}
+            
+            <div ref={messagesEndRef} />
+          </div>
 
-            {/* Input */}
-            <div className="p-4 border-t flex space-x-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask me anything about skincare..."
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage(inputValue)}
-                disabled={isLoading}
-              />
-              <Button
-                onClick={() => handleSendMessage(inputValue)}
-                disabled={isLoading || !inputValue.trim()}
-                size="icon"
-                className="btn-hero"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
+          {/* Quick Options */}
+          {messages.length === 1 && (
+            <div className="px-4 py-2 border-t space-y-2 flex-shrink-0">
+              <p className="text-sm text-muted-foreground">Quick options:</p>
+              <div className="flex flex-wrap gap-2">
+                {quickOptions.map((option) => (
+                  <Badge
+                    key={option.value}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-xs"
+                    onClick={() => handleQuickOption(option.value)}
+                  >
+                    {option.label}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          )}
+
+          {/* Input Area */}
+          <div className="px-4 py-3 border-t flex space-x-2 flex-shrink-0">
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Ask me anything about skincare..."
+              onKeyPress={(e) => e.key === "Enter" && handleSendMessage(inputValue)}
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button
+              onClick={() => handleSendMessage(inputValue)}
+              disabled={isLoading || !inputValue.trim()}
+              size="icon"
+              className="btn-hero h-10 w-10"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       )}
     </>
   );
