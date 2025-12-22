@@ -1,73 +1,146 @@
-# Welcome to your Lovable project
+🌿 SkinSync – AI-Powered Skincare Assistant
 
-## Project info
+SkinSync is a no-code, AI-powered skincare platform designed to help users—especially those with acne-prone skin—receive personalized skincare routines, diet suggestions, and ingredient safety checks based on their skin type and lifestyle.
 
-**URL**: https://lovable.dev/projects/11742ac8-1f50-4ac3-8dc5-a87beddd1410
+The project focuses on accessibility, simplicity, and science-backed guidance, delivered through an interactive quiz and an AI chatbot.
 
-## How can I edit this code?
+🚀 Features
+🧠 AI Skincare Chatbot
 
-There are several ways of editing your application.
+Interactive chatbot for skincare guidance
 
-**Use Lovable**
+Answers questions about:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/11742ac8-1f50-4ac3-8dc5-a87beddd1410) and start prompting.
+Skincare routines
 
-Changes made via Lovable will be committed automatically to this repo.
+Diet and nutrition
 
-**Use your preferred IDE**
+Acne triggers
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Ingredient safety
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Supports follow-up questions and conversations
 
-Follow these steps:
+Uses an external AI API (via OpenRouter / OpenAI-compatible API)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+📝 Skin Type Quiz
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Users answer simple questions about:
 
-# Step 3: Install the necessary dependencies.
-npm i
+Skin type
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Acne concerns
 
-**Edit a file directly in GitHub**
+Diet habits
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+AI generates a personalized routine
 
-**Use GitHub Codespaces**
+Only the relevant routine is shown (not all routines)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Quiz responses and AI-generated routines are saved for future reference
 
-## What technologies are used for this project?
+🧴 Ingredient Checker
 
-This project is built with:
+Users can input product ingredients
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+AI checks whether ingredients are:
 
-## How can I deploy this project?
+Suitable for the user’s skin type
 
-Simply open [Lovable](https://lovable.dev/projects/11742ac8-1f50-4ac3-8dc5-a87beddd1410) and click on Share -> Publish.
+Acne-safe or pore-clogging
 
-## Can I connect a custom domain to my Lovable project?
+Clear, easy-to-understand feedback
 
-Yes, you can!
+🎥 Educational Content
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Embedded YouTube videos explaining:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+How to identify your skin type
+
+Basic skincare hygiene
+
+Video suggestions can adapt based on quiz results
+
+🧩 Chatbot UI Fix (Important Update)
+
+The chatbot has been improved to behave like a real messaging app:
+
+Fixed layout with three sections:
+
+Header (title + close button)
+
+Scrollable message area
+
+Input bar pinned at the bottom
+
+Long answers stay inside the chatbot window
+
+Auto-scrolls to the latest message
+
+User can ask multiple questions continuously
+
+Prevents messages from overflowing outside the chatbox
+
+This ensures a smooth and usable chat experience across devices.
+
+🛠 Tech Stack
+
+Platform: Lovable (no-code)
+
+AI API: OpenRouter (OpenAI-compatible models, e.g. gpt-oss-20b)
+
+Frontend: Lovable UI components
+
+Database: Built-in Lovable database
+
+Video Sources: YouTube embeds
+
+Language: English only
+
+🔐 API Configuration
+
+The chatbot uses an AI API key stored as a secret.
+
+Required Secret Name:
+
+OPENAI_API_KEY
+
+
+Even when using OpenRouter, the secret name must remain OPENAI_API_KEY for compatibility.
+
+Make sure:
+
+The API key has active quota
+
+The correct model is selected (e.g., OpenAI: gpt-oss-20b (free))
+
+The platform is online (offline mode disables AI features)
+
+📊 What Success Looks Like
+
+Users complete the skin quiz and receive relevant routines
+
+Chatbot responds smoothly without layout issues
+
+Ingredient checker provides clear results
+
+Users can ask follow-up questions easily
+
+Platform remains simple, clean, and beginner-friendly
+
+🧭 Future Enhancements
+
+Automated notifications for routines and diet tips
+
+Weekly skincare reminders
+
+Community features
+
+Support for additional skin concerns (wrinkles, pigmentation)
+
+Multi-model AI support
+
+📄 License
+
+This project is for educational and research purposes.
+Medical or dermatological advice is not a substitute for professional consultation.
