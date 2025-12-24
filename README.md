@@ -1,146 +1,92 @@
-🌿 SkinSync – AI-Powered Skincare Assistant
+# 🌿 SkinSync – AI-Powered Skincare Assistant
 
-SkinSync is a no-code, AI-powered skincare platform designed to help users—especially those with acne-prone skin—receive personalized skincare routines, diet suggestions, and ingredient safety checks based on their skin type and lifestyle.
+SkinSync is a  AI-powered skincare platform designed to help users—especially those with acne-prone skin—receive personalized skincare routines, diet suggestions, and ingredient safety checks based on their skin type and lifestyle.
 
 The project focuses on accessibility, simplicity, and science-backed guidance, delivered through an interactive quiz and an AI chatbot.
 
-🚀 Features
-🧠 AI Skincare Chatbot
+## 🚀 Features
 
-Interactive chatbot for skincare guidance
+### 🧠 AI Skincare Chatbot
+Interactive chatbot for skincare guidance that answers questions about:
+* Skincare routines
+* Diet and nutrition
+* Acne triggers
+* Ingredient safety
 
-Answers questions about:
+**Key Capabilities:**
+* Supports follow-up questions and conversations
+* Uses an external AI API (via OpenRouter)
+* Provides context-aware responses based on your quiz results
 
-Skincare routines
-
-Diet and nutrition
-
-Acne triggers
-
-Ingredient safety
-
-Supports follow-up questions and conversations
-
-Uses an external AI API (via OpenRouter / OpenAI-compatible API)
-
-📝 Skin Type Quiz
-
+### 📝 Skin Type Quiz
 Users answer simple questions about:
+* Skin type (Oily, Dry, Combination, Sensitive)
+* Climate (Hot, Cold, Temperate, etc.)
+* Diet habits
+* Main skin concerns
 
-Skin type
+**Outcome:**
+* AI generates a personalized routine (Morning, Evening, Weekly treatments)
+* Quiz responses and generated routines are saved locally and in the database for future reference
 
-Acne concerns
+### 🧴 Ingredient Checker
+Users can input product ingredients to receive an AI analysis:
+* Checks suitability for the user’s specific skin type
+* Identifies potential acne triggers or pore-clogging ingredients
+* Provides clear, easy-to-understand safety badges (Safe, Caution, Avoid)
 
-Diet habits
+### 🎥 Educational Content
+A curated library of resources including:
+* Embedded YouTube videos explaining how to identify skin type and basic hygiene
+* In-depth articles on skincare mistakes, habits, and seasonal care
+* Visual difficulty indicators for video content
 
-AI generates a personalized routine
+### 🧩 Enhanced Chatbot UI
+The chatbot offers a native app-like experience:
+* **Header**: Title + close button
+* **Scrollable Area**: Messages auto-scroll to the latest entry
+* **Pinned Input**: Input bar stays fixed at the bottom
+* **Overflow Handling**: Long answers stay strictly inside the chatbot window
+* **Continuous Chat**: Users can ask multiple questions without interruption
 
-Only the relevant routine is shown (not all routines)
+## 🛠 Tech Stack
 
-Quiz responses and AI-generated routines are saved for future reference
+* **Platform**: Lovable (React/Vite environment)
+* **AI API**: OpenRouter (accessing OpenAI-compatible models, e.g., gpt-oss-20b)
+* **Frontend**: React, TypeScript, Tailwind CSS, Shadcn UI
+* **Database**: Supabase
+* **Icons**: Lucide React
 
-🧴 Ingredient Checker
+## 🔐 API Configuration
 
-Users can input product ingredients
+The chatbot and analysis features rely on the OpenRouter API. You must configure the secret key correctly for the backend functions to work.
 
-AI checks whether ingredients are:
+**Required Secret Name:**
+`OPENROUTER_API_KEY`
 
-Suitable for the user’s skin type
+**Setup Instructions:**
+1.  Obtain an API key from [OpenRouter](https://openrouter.ai/).
+2.  Add this key to your project's secrets management (e.g., Supabase Vault or `.env` file for local development).
+3.  Ensure the key has an active quota.
 
-Acne-safe or pore-clogging
+**Note on Models:**
+The system is currently configured to use the `openai/gpt-oss-20b` model. You can modify the model selection in `supabase/functions/chat-ai/index.ts` if needed.
 
-Clear, easy-to-understand feedback
+## 📊 What Success Looks Like
 
-🎥 Educational Content
+* ✅ Users complete the skin quiz and receive a generated routine.
+* ✅ Chatbot responds accurately to specific skincare queries.
+* ✅ Ingredient checker correctly identifies risky ingredients based on user context.
+* ✅ Platform layout remains responsive and clean across devices.
 
-Embedded YouTube videos explaining:
+## 🧭 Future Enhancements
 
-How to identify your skin type
+* **Dynamic Educational Content**: Adapt video suggestions based on specific quiz results.
+* **Automated Notifications**: Reminders for routines and diet tips.
+* **Community Features**: User forums or reviews.
+* **Multi-model AI Support**: Allow users to switch between different AI models.
 
-Basic skincare hygiene
-
-Video suggestions can adapt based on quiz results
-
-🧩 Chatbot UI Fix (Important Update)
-
-The chatbot has been improved to behave like a real messaging app:
-
-Fixed layout with three sections:
-
-Header (title + close button)
-
-Scrollable message area
-
-Input bar pinned at the bottom
-
-Long answers stay inside the chatbot window
-
-Auto-scrolls to the latest message
-
-User can ask multiple questions continuously
-
-Prevents messages from overflowing outside the chatbox
-
-This ensures a smooth and usable chat experience across devices.
-
-🛠 Tech Stack
-
-Platform: Lovable (no-code)
-
-AI API: OpenRouter (OpenAI-compatible models, e.g. gpt-oss-20b)
-
-Frontend: Lovable UI components
-
-Database: Built-in Lovable database
-
-Video Sources: YouTube embeds
-
-Language: English only
-
-🔐 API Configuration
-
-The chatbot uses an AI API key stored as a secret.
-
-Required Secret Name:
-
-OPENAI_API_KEY
-
-
-Even when using OpenRouter, the secret name must remain OPENAI_API_KEY for compatibility.
-
-Make sure:
-
-The API key has active quota
-
-The correct model is selected (e.g., OpenAI: gpt-oss-20b (free))
-
-The platform is online (offline mode disables AI features)
-
-📊 What Success Looks Like
-
-Users complete the skin quiz and receive relevant routines
-
-Chatbot responds smoothly without layout issues
-
-Ingredient checker provides clear results
-
-Users can ask follow-up questions easily
-
-Platform remains simple, clean, and beginner-friendly
-
-🧭 Future Enhancements
-
-Automated notifications for routines and diet tips
-
-Weekly skincare reminders
-
-Community features
-
-Support for additional skin concerns (wrinkles, pigmentation)
-
-Multi-model AI support
-
-📄 License
+## 📄 License
 
 This project is for educational and research purposes.
-Medical or dermatological advice is not a substitute for professional consultation.
+**Medical or dermatological advice provided by the AI is not a substitute for professional consultation.**
