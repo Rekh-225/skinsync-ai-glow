@@ -7,7 +7,6 @@ SkinSync is a React + Vite skincare guidance platform that helps users explore r
 
 ## 🚀 Features
 
-### 🧠 AI Skincare Chatbot
 ### 🧠 Skincare Chatbot
 Interactive chatbot for skincare guidance that answers questions about:
 * Skincare routines
