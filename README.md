@@ -1,92 +1,204 @@
-# 🌿 SkinSync – AI-Powered Skincare Assistant
+🌿 SkinSync – AI-Powered Skincare Assistant
 
-SkinSync is a  AI-powered skincare platform designed to help users—especially those with acne-prone skin—receive personalized skincare routines, diet suggestions, and ingredient safety checks based on their skin type and lifestyle.
+SkinSync is an AI-powered skincare guidance platform designed to help users—especially those with acne-prone or sensitive skin—build personalized skincare routines, understand ingredient safety, and adopt healthier lifestyle habits.
 
-The project focuses on accessibility, simplicity, and science-backed guidance, delivered through an interactive quiz and an AI chatbot.
+The platform combines science-backed educational content with AI-driven personalization, delivered through an interactive skin quiz and a conversational chatbot. SkinSync prioritizes accessibility, simplicity, and practical skincare guidance.
 
-## 🚀 Features
+🚀 Features
+🧠 AI Skincare Chatbot
 
-### 🧠 AI Skincare Chatbot
-Interactive chatbot for skincare guidance that answers questions about:
-* Skincare routines
-* Diet and nutrition
-* Acne triggers
-* Ingredient safety
+An interactive chatbot that provides personalized skincare guidance, including:
 
-**Key Capabilities:**
-* Supports follow-up questions and conversations
-* Uses an external AI API (via OpenRouter)
-* Provides context-aware responses based on your quiz results
+Daily skincare routines
 
-### 📝 Skin Type Quiz
-Users answer simple questions about:
-* Skin type (Oily, Dry, Combination, Sensitive)
-* Climate (Hot, Cold, Temperate, etc.)
-* Diet habits
-* Main skin concerns
+Diet and nutrition advice
 
-**Outcome:**
-* AI generates a personalized routine (Morning, Evening, Weekly treatments)
-* Quiz responses and generated routines are saved locally and in the database for future reference
+Acne triggers and prevention
 
-### 🧴 Ingredient Checker
-Users can input product ingredients to receive an AI analysis:
-* Checks suitability for the user’s specific skin type
-* Identifies potential acne triggers or pore-clogging ingredients
-* Provides clear, easy-to-understand safety badges (Safe, Caution, Avoid)
+Ingredient safety explanations
 
-### 🎥 Educational Content
-A curated library of resources including:
-* Embedded YouTube videos explaining how to identify skin type and basic hygiene
-* In-depth articles on skincare mistakes, habits, and seasonal care
-* Visual difficulty indicators for video content
+Key Capabilities
 
-### 🧩 Enhanced Chatbot UI
-The chatbot offers a native app-like experience:
-* **Header**: Title + close button
-* **Scrollable Area**: Messages auto-scroll to the latest entry
-* **Pinned Input**: Input bar stays fixed at the bottom
-* **Overflow Handling**: Long answers stay strictly inside the chatbot window
-* **Continuous Chat**: Users can ask multiple questions without interruption
+Context-aware responses based on quiz results
 
-## 🛠 Tech Stack
+Supports follow-up questions and continuous conversations
 
-* **Platform**: Lovable (React/Vite environment)
-* **AI API**: OpenRouter (accessing OpenAI-compatible models, e.g., gpt-oss-20b)
-* **Frontend**: React, TypeScript, Tailwind CSS, Shadcn UI
-* **Database**: Supabase
-* **Icons**: Lucide React
+Powered by OpenRouter via Supabase Edge Functions
 
-## 🔐 API Configuration
+Quiz data stored in localStorage for persistent personalization
 
-The chatbot and analysis features rely on the OpenRouter API. You must configure the secret key correctly for the backend functions to work.
+📝 Skin Type Quiz & Personalized Routine
 
-**Required Secret Name:**
-`OPENROUTER_API_KEY`
+Users answer a short quiz covering:
 
-**Setup Instructions:**
-1.  Obtain an API key from [OpenRouter](https://openrouter.ai/).
-2.  Add this key to your project's secrets management (e.g., Supabase Vault or `.env` file for local development).
-3.  Ensure the key has an active quota.
+Skin type (Oily, Dry, Combination, Sensitive)
 
-**Note on Models:**
-The system is currently configured to use the `openai/gpt-oss-20b` model. You can modify the model selection in `supabase/functions/chat-ai/index.ts` if needed.
+Climate (Hot, Cold, Temperate, etc.)
 
-## 📊 What Success Looks Like
+Diet habits
 
-* ✅ Users complete the skin quiz and receive a generated routine.
-* ✅ Chatbot responds accurately to specific skincare queries.
-* ✅ Ingredient checker correctly identifies risky ingredients based on user context.
-* ✅ Platform layout remains responsive and clean across devices.
+Primary skin concerns
 
-## 🧭 Future Enhancements
+Outcome
 
-* **Dynamic Educational Content**: Adapt video suggestions based on specific quiz results.
-* **Automated Notifications**: Reminders for routines and diet tips.
-* **Community Features**: User forums or reviews.
-* **Multi-model AI Support**: Allow users to switch between different AI models.
+AI-generated skincare routine (Morning, Evening, Weekly care)
 
-## 📄 License
+Quiz responses and routines stored in Supabase and localStorage
 
-This project is for educational and research purposes.
-**Medical or dermatological advice provided by the AI is not a substitute for professional consultation.**
+Built-in fallback routine when AI services are unavailable
+
+🧴 Ingredient Checker
+
+Users can input product ingredient lists to receive AI analysis:
+
+Skin-type suitability assessment
+
+Identification of acne triggers and pore-clogging ingredients
+
+Simple safety badges: Safe, Caution, Avoid
+
+🎥 Educational Content
+
+A curated learning section featuring:
+
+Embedded YouTube videos on skin type identification and hygiene
+
+Articles on skincare habits, common mistakes, and seasonal care
+
+Visual difficulty indicators for content accessibility
+
+🧩 Enhanced Chatbot UI
+
+Designed for a smooth, app-like experience:
+
+Fixed header with title and close button
+
+Scrollable message area with auto-scroll
+
+Pinned input bar at the bottom
+
+Proper overflow handling for long responses
+
+Continuous chat without session resets
+
+📰 Articles Feed (Mock Data)
+
+The articles feed currently uses mock data served from a Supabase Edge Function.
+It is designed to be easily replaced with a real news or RSS integration.
+
+🛠 Tech Stack
+
+Frontend: React, TypeScript, Vite
+
+Styling: Tailwind CSS, Shadcn UI
+
+Backend: Supabase (Auth + Edge Functions)
+
+Database: Supabase
+
+AI API: OpenRouter (OpenAI-compatible models)
+
+Icons: Lucide React
+
+🔐 API Configuration
+
+AI-powered features require an OpenRouter API key.
+
+Required Secret
+OPENROUTER_API_KEY
+
+Setup Instructions
+
+Obtain an API key from https://openrouter.ai
+
+Add the key to Supabase secrets or a local .env file
+
+Ensure the key has an active quota
+
+Model Configuration
+
+Default model: openai/gpt-oss-20b
+
+Can be modified in:
+
+supabase/functions/chat-ai/index.ts
+
+🧱 Architecture Overview
+src/
+ ├─ components/
+ ├─ pages/
+ ├─ integrations/
+ │   └─ supabase/client.ts
+supabase/
+ └─ functions/
+     ├─ chat-ai              → chatbot responses
+     ├─ generate-routine     → routine generation & storage
+     ├─ analyze-ingredients  → ingredient safety analysis
+     └─ fetch-articles       → mock articles feed
+
+🔐 Required Secrets (Supabase Edge Functions)
+
+OPENROUTER_API_KEY – AI responses
+
+SUPABASE_URL – Supabase project URL
+
+SUPABASE_SERVICE_ROLE_KEY – Server-side database access
+
+✅ Getting Started
+
+Install dependencies:
+
+npm install
+
+
+Start the development server:
+
+npm run dev
+
+
+Configure Supabase Edge Functions and secrets to enable AI features.
+
+🧪 Local Development Notes
+
+The app runs without AI features by default
+
+Chatbot, routine generation, and ingredient analysis require:
+
+Supabase Edge Functions
+
+OpenRouter API credentials
+
+A fallback routine is used if AI calls fail
+
+📦 Deployment
+
+Frontend: Vercel, Netlify, or GitHub Pages (Vite build output)
+
+Backend: Supabase Edge Functions (with secrets configured)
+
+🧭 Future Enhancements
+
+Dynamic educational content based on quiz results
+
+Routine reminders and notifications
+
+Community features (reviews, discussions)
+
+Multi-model AI selection for users
+
+📄 License
+
+This project is intended for educational and research purposes only.
+
+Disclaimer:
+AI-generated skincare guidance is not a substitute for professional medical or dermatological advice.
+
+If you want, I can also:
+
+Add screenshots & demo GIF sections
+
+Write a short project description for recruiters
+
+Optimize this README for hackathons or open-source showcases
+
+Just tell me 👍
