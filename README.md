@@ -107,21 +107,6 @@ AI-powered features require an OpenRouter API key.
 Required Secret
 OPENROUTER_API_KEY
 
-Setup Instructions
-
-Obtain an API key from https://openrouter.ai
-
-Add the key to Supabase secrets or a local .env file
-
-Ensure the key has an active quota
-
-Model Configuration
-
-Default model: openai/gpt-oss-20b
-
-Can be modified in:
-
-supabase/functions/chat-ai/index.ts
 
 🧱 Architecture Overview
 src/
